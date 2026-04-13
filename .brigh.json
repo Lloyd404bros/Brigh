@@ -1,0 +1,59 @@
+{
+  "detections": {
+    "auth": null,
+    "backend": null,
+    "build_tool": null,
+    "database": null,
+    "deployment": null,
+    "evidence": {
+      "languages": [
+        "Python from .py files (7)"
+      ],
+      "testing": [
+        "unittest inferred from import in tests/test_cli.py"
+      ]
+    },
+    "framework": null,
+    "languages": [
+      "Python"
+    ],
+    "linting": [],
+    "package_manager": null,
+    "project_map": {
+      "config_files_detected": [
+        "pyproject.toml"
+      ],
+      "key_files": [
+        "README.md",
+        "pyproject.toml",
+        "src/brigh/cli.py",
+        "src/brigh/detectors.py",
+        "tests/test_cli.py",
+        "tests/test_phase1.py",
+        "LICENSE",
+        "NOTES.md"
+      ],
+      "suggested_commands": [
+        "python3 -m brigh.cli scan .",
+        "python3 -m unittest discover -s tests -p 'test_*.py' -v"
+      ],
+      "top_directories": [
+        "src",
+        "tests"
+      ]
+    },
+    "structure": {
+      "source_dir": "src/",
+      "src_subdirs": [
+        "brigh"
+      ]
+    },
+    "styling": [],
+    "testing": [
+      "unittest"
+    ]
+  },
+  "generated_at": "2026-04-13T17:05:00.376714+00:00",
+  "generated_by": "brigh/0.1.0",
+  "schema_version": "1"
+}
