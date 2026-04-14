@@ -150,6 +150,7 @@ Areas where contributions are especially valued:
 - [x] Core scanning engine
 - [x] CLI interface
 - [x] CLAUDE.md generation
+- [x] AGENTS.md generation
 - [x] .cursorrules generation
 - [x] copilot-instructions.md generation
 

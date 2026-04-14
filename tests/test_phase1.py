@@ -28,6 +28,18 @@ class Phase1Tests(unittest.TestCase):
             self.assertIn("src", result["folders"])
             self.assertIn("supabase", result["folders"])
 
+    def test_scan_project_skips_symlinked_directories(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "src").mkdir(parents=True, exist_ok=True)
+            (root / "src" / "main.py").write_text("print('hello')\n")
+            (root / "linked-src").symlink_to(root / "src", target_is_directory=True)
+
+            result = scan_project(root)
+
+            self.assertIn("src/main.py", result["files"])
+            self.assertNotIn("linked-src/main.py", result["files"])
+
     def test_parse_pyproject_toml_collects_project_and_poetry_dependencies(self):
         raw = """
 [project]
@@ -102,7 +114,7 @@ dependencies = ["fastapi>=0.100", "sqlalchemy>=2.0", "pytest>=8.0"]
         with tempfile.TemporaryDirectory() as tmp:
             paths = write_all("content", Path(tmp), targets=["agents", "cursor", "brigh", "cursor"])
             names = [p.name for p in paths]
-            self.assertEqual(names, [".brigh.md", "AGENTS.md", ".cursorrules"])
+            self.assertEqual(names, [".brigh.md", ".cursorrules", "AGENTS.md"])
 
 
 if __name__ == "__main__":

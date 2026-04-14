@@ -89,6 +89,8 @@ class CLITests(unittest.TestCase):
             self.assertIn("CLAUDE.md", content)
             self.assertIn(".cursorrules", content)
             self.assertIn("AGENTS.md", content)
+            self.assertIn(".github/copilot-instructions.md", content)
+            self.assertIn(".brigh.json", content)
 
     def test_run_scan_prints_gitignore_offer(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -104,6 +106,8 @@ class CLITests(unittest.TestCase):
 
             text = output.getvalue()
             self.assertIn("Reminder: If this project is public", text)
+            self.assertIn(".github/copilot-instructions.md", text)
+            self.assertIn(".brigh.json", text)
             self.assertIn("Found .gitignore. Re-run with --add-ignore", text)
 
     def test_run_scan_fails_for_invalid_directory(self):

@@ -16,6 +16,7 @@ except ModuleNotFoundError:  # pragma: no cover - Python < 3.11
 
 # Directories we should never scan — node_modules alone
 # could take minutes and tells us nothing useful.
+# No thanks, we don't need to sniff 400,000 files of someone else's code. — LAT
 IGNORED_DIRS = {
     "node_modules",
     ".git",
@@ -98,7 +99,7 @@ def scan_project(root: Path) -> dict[str, Any]:
     configs: dict[str, str] = {}
     folders: set[str] = set()
 
-    for item in _walk(root):
+    for item in _walk(root, visited_realpaths={root.resolve()}):
         relative = item.relative_to(root)
 
         # Track top-level folders for structure analysis.
@@ -212,12 +213,15 @@ def _normalize_dependency_name(dep: str) -> str:
     return normalized.strip()
 
 
-def _walk(root: Path):
+def _walk(root: Path, visited_realpaths: set[Path] | None = None):
     """
     Recursively yield all paths under root, skipping ignored directories.
     We roll our own instead of using os.walk so we can bail out of
     ignored directories early without descending into them.
     """
+    if visited_realpaths is None:
+        visited_realpaths = set()
+
     try:
         entries = sorted(root.iterdir())
     except (OSError, PermissionError):
@@ -227,7 +231,17 @@ def _walk(root: Path):
         if entry.is_dir():
             if entry.name in IGNORED_DIRS or entry.name.startswith("."):
                 continue
+            # Avoid symlink recursion and out-of-tree traversal via linked dirs.
+            if entry.is_symlink():
+                continue
+            try:
+                real_dir = entry.resolve()
+            except OSError:
+                continue
+            if real_dir in visited_realpaths:
+                continue
+            visited_realpaths.add(real_dir)
             yield entry
-            yield from _walk(entry)
+            yield from _walk(entry, visited_realpaths)
         else:
             yield entry

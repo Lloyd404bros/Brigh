@@ -7,19 +7,23 @@ this is what runs.
 
 import argparse
 import sys
+import time
 from pathlib import Path
 
-from brigh import __version__
+from brigh import __codename__, __version__
 from brigh.scanner import scan_project
 from brigh.detectors import detect_all
 from brigh.generator import generate_context, generate_json_payload, write_all
 
+# This took longer to name than to build. — LAT
 
 GITIGNORE_CONTEXT_ENTRIES = [
     ".brigh.md",
     "CLAUDE.md",
     ".cursorrules",
     "AGENTS.md",
+    ".github/copilot-instructions.md",
+    ".brigh.json",
 ]
 
 
@@ -27,12 +31,18 @@ def main():
     """Main entry point for the brigh CLI."""
     parser = argparse.ArgumentParser(
         prog="brigh",
+        # This took longer to name than to build. — LAT
         description="Brígh — The essence of your codebase, understood.",
     )
     parser.add_argument(
         "--version",
         action="version",
         version=f"brigh {__version__}",
+    )
+    parser.add_argument(
+        "--about",
+        action="store_true",
+        help=argparse.SUPPRESS,
     )
 
     subparsers = parser.add_subparsers(dest="command")
@@ -60,8 +70,16 @@ def main():
         action="store_true",
         help="Add generated context files to .gitignore automatically.",
     )
+    subparsers.add_parser(
+        "credits",
+        help=argparse.SUPPRESS,
+    )
 
     args = parser.parse_args()
+
+    if args.about:
+        print("\"Everyone's going to kill me when I tell them I've been using this for the past 18 months.\"")
+        sys.exit(0)
 
     if args.command is None:
         parser.print_help()
@@ -69,6 +87,14 @@ def main():
 
     if args.command == "scan":
         _run_scan(args)
+    elif args.command == "credits":
+        _print_credits()
+
+
+def _print_credits() -> None:
+    print(f'Brígh v{__version__} "{__codename__}"')
+    print("404Bros LTD")
+    print("Born from baked beans and Buxton air.")
 
 
 def _run_scan(args):
@@ -79,8 +105,13 @@ def _run_scan(args):
         print(f"Error: '{project_path}' is not a directory.")
         sys.exit(1)
 
+    print(f'Brígh v{__version__} "{__codename__}"')
+    print()
+
+    started_at = time.perf_counter()
+
     # Step 1: Scan.
-    print(f"Scanning {project_path.name}/...")
+    print(f"Sniffing {project_path.name}/...")
     scan_data = scan_project(project_path)
     print(f"  Found {scan_data['total_files']} files across {len(scan_data['folders'])} directories.")
 
@@ -107,15 +138,19 @@ def _run_scan(args):
         json_payload=json_payload,
     )
 
+    elapsed_seconds = time.perf_counter() - started_at
+
     # Done.
     print()
-    print("Done. Generated:")
+    print(f"Done. Rubber ducked in {elapsed_seconds:.1f} seconds.")
+    print()
+    print("Generated:")
     for path in written:
         relative = path.relative_to(project_path)
         print(f"  {relative}")
 
     print()
-    print("Your AI tools will pick these up automatically. Happy coding.")
+    print("Your AI tools will pick these up automatically.")
     _print_gitignore_guidance(project_path, add_ignore=args.add_ignore)
 
 
@@ -124,7 +159,7 @@ def _print_gitignore_guidance(project_path: Path, add_ignore: bool) -> None:
     print()
     print(
         "Reminder: If this project is public, add .brigh.md, CLAUDE.md, .cursorrules, "
-        "and AGENTS.md to .gitignore."
+        "AGENTS.md, .github/copilot-instructions.md, and .brigh.json to .gitignore."
     )
 
     gitignore_path = project_path / ".gitignore"

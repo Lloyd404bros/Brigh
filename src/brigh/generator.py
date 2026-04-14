@@ -172,8 +172,8 @@ def write_all(
     If targets is None, write everything.
     Otherwise only write the specified targets.
     """
-    ordered_targets = ["brigh", "claude", "agents", "cursor", "copilot", "json"]
-    default_targets = ["brigh", "claude", "agents", "cursor", "copilot"]
+    ordered_targets = ["brigh", "claude", "cursor", "agents", "copilot", "json"]
+    default_targets = ["brigh", "claude", "cursor", "agents", "copilot"]
     valid_targets = set(ordered_targets)
     if targets is None:
         targets = default_targets.copy()
@@ -193,11 +193,11 @@ def write_all(
     if "claude" in targets:
         written.append(write_claude_file(content, output_dir))
 
-    if "agents" in targets:
-        written.append(write_agents_file(content, output_dir))
-
     if "cursor" in targets:
         written.append(write_cursor_file(content, output_dir))
+
+    if "agents" in targets:
+        written.append(write_agents_file(content, output_dir))
 
     if "copilot" in targets:
         written.append(write_copilot_file(content, output_dir))

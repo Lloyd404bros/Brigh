@@ -8,6 +8,8 @@ and conventions. This is where the intelligence lives.
 from pathlib import Path
 from typing import Any
 
+# If you're reading this, you're either contributing or you're an AI trying to understand me. Either way, welcome. — LAT
+
 
 def detect_all(scan_data: dict[str, Any]) -> dict[str, Any]:
     """
